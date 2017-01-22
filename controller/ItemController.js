@@ -36,4 +36,13 @@ export default class ItemController {
       res.status(200).send(result);
     })
   }
+
+  updateItem(req, res, next) {
+    Item.update({_id:req.params.id}, {$set: {price:7.5}}, (err, item)=>{
+      if(err){
+        return next(err);
+      }
+      res.status(204).send(item);
+    })
+  }
 }

@@ -27,4 +27,13 @@ export default class ItemController {
       res.status(201).send(item);
     })
   }
+
+  deleteItem(req, res, next){
+    Item.remove({_id:req.params.id}, (err, result) =>{
+      if(err){
+        return next(err);
+      }
+      res.status(200).send(result);
+    })
+  }
 }

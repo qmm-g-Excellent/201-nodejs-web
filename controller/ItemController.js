@@ -18,4 +18,13 @@ export default class ItemController {
       res.status(200).send(item);
     })
   }
+
+  insertItem(req, res, next) {
+    new Item(req.body).save((err, item)=> {
+      if (err) {
+        return next(err);
+      }
+      res.status(201).send(item);
+    })
+  }
 }

@@ -43,8 +43,7 @@
  
 3. 创建Model: cart，cart 与 item 为多对多关系，并参照上面完成相应接口
 
-
-```
+ ```
     GET carts/    #获取所有的cart
     GET  carts/:cartId   #获取一个cart
     POST carts/    #增加一个cart
@@ -53,7 +52,7 @@
     POST carts/:userId/:cartId   #给一个cart增加一个item
     DELETE carts/:userId/:cartId/:itemId   #删除一个cart的item
    
-```
+ ```
 
 
 ### 进阶篇

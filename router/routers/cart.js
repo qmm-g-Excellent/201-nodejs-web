@@ -5,8 +5,12 @@ const router = Router();
 const cartController = new CartController();
 
 router.get('/',cartController.getAll);
+router.get('/:cartId',cartController.getCart);
 router.post('/',cartController.addCart);
-router.put('/:cartId',cartController.updateCart);
-router.delete('/:cartId',cartController.deleteCart);
+router.put('/:userId/:cartId/:itemId',cartController.updateCart);
+router.delete('/:userId/:cartId',cartController.deleteCart);
+router.post('/:userId/:cartId',cartController.addItemToCart);
+router.delete('/:userId/:cartId/:itemId',cartController.deleteItemFromCart);
+
 
 export default router;

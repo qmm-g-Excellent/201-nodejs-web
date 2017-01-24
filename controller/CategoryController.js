@@ -14,7 +14,7 @@ export default class CategoryController {
 
   getCategory(req, res, next) {
     Category.findOne({categoryId: req.params.categoryId})
-        .populate('Item')
+        .populate('items')
         .exec((err, doc)=> {
           if (err) {
             return next(err);
@@ -53,6 +53,24 @@ export default class CategoryController {
     })
   }
 
+  addExitedItemToCategory(req, res, next) {
+    const categoryId = req.params.categoryId;
+    const itemId = req.params.itemId;
+    Category.findOne({categoryId}, (err, category)=> {
+      Category.findOne({'items': itemId}, (err, doc) => {
+        if (err) {
+          return next(err);
+        }
+        if (!doc) {
+          category.items.push(itemId);
+          category.save();
+          return res.status(201).send(category);
+        }
+        res.sendStatus(204);
+      })
+    })
+  }
+
   addItemToCategory(req, res, next) {
     let categoryId = req.params.categoryId;
     let item = {
@@ -85,6 +103,34 @@ export default class CategoryController {
     });
   }
 
+  updateItemForCategory(req, res, next) {
+    const itemId = req.params.itemId;
+    const categoryId = req.params.categoryId;
+    const price = req.body.price;
+    Item.update({_id: itemId}, {price}, (err, item)=> {
+      Category.findOne({categoryId, 'items': itemId})
+          .populate('items')
+          .exec((err, item) => {
+            if (err) {
+              return next(err);
+            }
+            res.status(201).send(item);
+          })
+    });
+  }
 
+  deleteItemForCategory(req, res, next) {
+    const itemId = req.params.itemId;
+    const categoryId = req.params.categoryId;
+    Category.findOne({categoryId}, (err, category)=> {
+      if(err){
+        return next(err)
+      }
+      category.items.remove(itemId);
+      category.save((err, doc) =>{
+        res.sendStatus(204);
+      });
+    })
+  }
 
 }

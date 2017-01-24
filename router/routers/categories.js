@@ -10,7 +10,9 @@ router.get('/:categoryId', categoryController.getCategory);
 router.post('/', categoryController.insertCategory);
 router.delete('/:categoryId', categoryController.deleteCategory);
 router.put('/:categoryId', categoryController.updateCategory);
+router.post('/:categoryId/:itemId', categoryController.addExitedItemToCategory);
 router.post('/:categoryId', categoryController.addItemToCategory);
-// router.post('/:categoryId/:itemId', categoryController.addItemIdToCategory);
+router.put('/:categoryId/:itemId', categoryController.updateItemForCategory);
+router.delete('/:categoryId/:itemId', categoryController.deleteItemForCategory);
 
 export default router;

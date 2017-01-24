@@ -23,7 +23,7 @@ export default class CategoryController {
         });
   }
 
-  insertCategory(req, res, next) {
+  addCategory(req, res, next) {
     new Category(req.body).save((err, category) => {
       if (err) {
         return next(err);

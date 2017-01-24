@@ -19,7 +19,7 @@ export default class ItemController {
     })
   }
 
-  insertItem(req, res, next) {
+  addItem(req, res, next) {
     new Item(req.body).save((err, item)=> {
       if (err) {
         return next(err);

@@ -14,15 +14,23 @@ export default class CartController {
 
   getCart(req, res, next) {
     const cartId = req.params.cartId;
-    Cart.aggregate()
-        .unwind('$carts')
-        .match({'carts.cartId': cartId})
-        .exec((err, cart) => {
-          if (err) {
-            return next(err);
-          }
-          res.status(200).send(cart);
-        });
+    async.waterfall([
+      (done)=>{
+        Cart.aggregate()
+            .unwind('$carts')
+            .match({'carts.cartId': cartId})
+            .exec(done);
+      },
+      (cart, done)=>{
+        Cart.populate(cart,'items',done);
+      }
+    ],(err, result)=>{
+      if(err){
+        return next(err);
+      }
+      res.status(200).send(result);
+    });
+
   }
 
   addCart(req, res, next) {

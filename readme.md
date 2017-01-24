@@ -27,7 +27,15 @@
    ```
 
 2. 创建Model: category，category 与 item 为一对多关系，并参照上面完成相应接口
-
+ GET categories/  #获取全部category
+ GET categories/:categoryId  #获取一个category
+ POST('/', categoryController.addCategory);
+ DELETE ('/:categoryId', categoryController.deleteCategory);
+ PUT ('/:categoryId', categoryController.updateCategory);
+ POST ('/:categoryId/:itemId', categoryController.addExitedItemToCategory);
+ POST ('/:categoryId', categoryController.addItemToCategory);
+ PUT ('/:categoryId/:itemId', categoryController.updateItemForCategory);
+ DELETE ('/:categoryId/:itemId', categoryController.deleteItemFo
 3. 创建Model: cart，cart 与 item 为多对多关系，并参照上面完成相应接口
 
 ### 进阶篇

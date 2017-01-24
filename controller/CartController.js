@@ -27,9 +27,17 @@ export default class CartController{
       if(err){
         return next(err);
       }
-      res.status(201).send(cart);
+      res.sendStatus(201);
     })
   }
 
-  
+  deleteCart(req, res, next){
+    const cartId= req.params.cartId;
+    Cart.remove({cartId},(err, result)=>{
+      if(err){
+        return next(err);
+      }
+      res.sendStatus(204);
+    })
+  }
 }

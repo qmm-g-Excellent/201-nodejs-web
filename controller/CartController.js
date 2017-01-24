@@ -44,10 +44,10 @@ export default class CartController {
   }
 
   updateCart(req, res, next) {
-    const userId = req.body.userId;
-    const cartId = req.params.cartId;
+    const userId = req.params.userId;
     const itemId = req.params.itemId;
-    Cart.update({userId, itemId}, {cartId}, (err, cart) => {
+    const cartId = req.body.cartId;
+    Cart.update({userId, 'carts.items':itemId}, {cartId}, (err, cart) => {
       if (err) {
         return next(err);
       }

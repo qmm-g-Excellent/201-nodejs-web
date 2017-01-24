@@ -10,8 +10,6 @@ export default class CartController{
     })
   }
 
-
-
   addCart(req, res, next){
     const cart = req.body;
     new Cart(cart).save((err,doc) =>{
@@ -21,4 +19,17 @@ export default class CartController{
       res.status(201).send(doc);
     })
   }
+
+  updateCart(req, res, next){
+    const cartId = req.params.cartId;
+    const userId = req.body.userId;
+    Cart.update({cartId}, {userId},(err,cart) =>{
+      if(err){
+        return next(err);
+      }
+      res.status(201).send(cart);
+    })
+  }
+
+  
 }

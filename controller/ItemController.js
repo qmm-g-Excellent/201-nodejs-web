@@ -1,4 +1,4 @@
-var Item = require("../models/item");
+import Item from "../models/item";
 
 export default class ItemController {
   getAll(req, res, next) {
@@ -38,7 +38,8 @@ export default class ItemController {
   }
 
   updateItem(req, res, next) {
-    Item.update({_id:req.params.id}, {$set: {price:7.5}}, (err, item)=>{
+    const price = req.body.price;
+    Item.update({_id:req.params.id}, {$set: {price}}, (err, item)=>{
       if(err){
         return next(err);
       }

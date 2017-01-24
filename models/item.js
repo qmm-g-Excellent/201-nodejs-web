@@ -1,15 +1,11 @@
 import mongoose from 'mongoose';
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 
-var itemSchema = new Schema({
+const ItemSchema = new Schema({
   name:String,
   price:Number,
-  count:Number,
-  CategoryId:{
-    type:Number,
-    ref:'Category'
-  }
+  count:Number
 });
 
-module.exports = mongoose.model('Item',itemSchema);
+export default mongoose.model('Item',ItemSchema);
 

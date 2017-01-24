@@ -38,9 +38,8 @@
  POST categories/:categoryId'   #给category添加一个Item
  PUT categories/:categoryId/:itemId'  #更新一个category的一个item
  DELETE categories/:categoryId/:itemId  #删除一个category的一个item
- 
 ```
- 
+
 3. 创建Model: cart，cart 与 item 为多对多关系，并参照上面完成相应接口
 
  ```

@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
-let Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-const ItemSchema = new Schema({
+const itemSchema = new Schema({
   name:String,
   price:Number,
-  count:Number
+  category:{
+    type:Schema.ObjectId,
+    ref: 'Category'
+  }
 });
 
-export default mongoose.model('Item',ItemSchema);
+export default mongoose.model('Item',itemSchema);
 

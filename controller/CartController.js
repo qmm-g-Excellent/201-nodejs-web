@@ -2,34 +2,53 @@ import Cart from '../models/cart';
 import Item from '../models/item';
 import async from 'async';
 
+const loadItemUri = (items)=>{
+  return items.map(({item,count})=>{
+    return {uri:`items/${item}`, count};
+  });
+};
+
 export default class CartController {
   getAll(req, res, next) {
-    Cart.find({}, (err, carts)=> {
+    async.series({
+      carts: (callback)=> {
+        Cart.find({}, (err, doc)=> {
+          if (err) {
+            return next(err);
+          }
+          let carts = doc.map((item)=> {
+            let cart = item.toJSON();
+            cart.items = loadItemUri(cart.items);
+             return cart;
+          });
+         callback(null, carts);
+        });
+      },
+      totalCount:(callback)=>{
+        Cart.count(callback);
+      }
+    }, (err, result)=> {
       if (err) {
         return next(err);
       }
-      res.status(200).send(carts);
-    })
+      return res.status(200).send(result);
+    });
   }
 
-  getCart(req, res, next) {
+  getOne(req, res, next) {
     const cartId = req.params.cartId;
-    async.waterfall([
-      (done)=>{
-        Cart.aggregate()
-            .unwind('$carts')
-            .match({'carts.cartId': cartId})
-            .exec(done);
-      },
-      (cart, done)=>{
-        Cart.populate(cart,'items',done);
-      }
-    ],(err, result)=>{
-      if(err){
-        return next(err);
-      }
-      res.status(200).send(result);
-    });
+     Cart.findById(cartId,(err, doc)=>{
+       if(err){
+         return next(err);
+       }
+       if(!doc){
+         return res.sendStatus(404);
+       }
+       let cart = doc.toJSON();
+       let items = cart.items;
+       cart.items = loadItemUri(items);
+       return res.status(200).send(cart);
+     })
 
   }
 
@@ -39,101 +58,33 @@ export default class CartController {
       if (err) {
         return next(err);
       }
-      res.status(201).send(doc);
-    })
-  }
-
-  updateCart(req, res, next) {
-    const userId = req.params.userId;
-    const itemId = req.params.itemId;
-    const cartId = req.body.cartId;
-    Cart.update({userId, 'carts.items':itemId}, {cartId}, (err, cart) => {
-      if (err) {
-        return next(err);
-      }
-      res.sendStatus(201);
+      res.status(201).send({uri:`carts/${doc._id}`});
     })
   }
 
   deleteCart(req, res, next) {
-    const userId = req.params.userId;
     const cartId = req.params.cartId;
-    async.waterfall([
-      (done)=> {
-        Cart.findOne({userId}, done);
-      },
-      (carts, done)=> {
-        const cart = carts.find(cart => cart.cartId === cartId);
-        carts.remove(cart);
-        new Cart(cart).save(done);
-      }
-    ], (err, result)=> {
-      if (err) {
-        return next(err);
-      }
-      res.sendStatus(204);
-    });
-  }
-
-  addItemToCart(req, res, next) {
-    const cartId = req.params.cartId;
-    const userId = req.params.userId;
-    const item = {
-      name: req.body.name,
-      price: req.body.price,
-      count: req.body.count
-    };
-    async.waterfall([
-      (done)=> {
-        new Item(item).save(item, done);
-      },
-      (item, done)=> {
-        Cart.findOne({userId}, (err, docs) => {
-          if (err) {
-            return done(err, null);
-          }
-          if (docs) {
-            let carts = docs.map((cart) => {
-              if (cart.cartId === cartId) {
-                cart.items.push(item._id);
-              }
-              return cart;
-            });
-            docs = carts;
-            docs.save(done);
-          }
-        });
-      }
-    ], (err, result)=> {
-      if (err) {
-        return next(err);
-      }
-      res.status(200).send(result);
-    });
-  }
-
-  deleteItemFromCart(req, res, next) {
-    const userId = req.params.userId;
-    const cartId = req.params.cartId;
-    const itemId = req.params.itemId;
-    async.waterfall([
-      (done)=>{
-        Cart.findOne({userId},done);
-      },
-      (docs, done)=>{
-       let carts=  docs.map((cart) =>{
-          if(cart.cartId === cartId){
-            cart.items.remove(itemId);
-          }
-          return cart;
-        });
-        new Cart(carts).save(done);
-      }
-    ],(err, result)=>{
+    Cart.findOneAndRemove({_id:cartId},(err, result)=>{
       if(err){
         return next(err);
       }
-      res.sendStatus(204);
+      if(!result){
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(204);
+    });
+  }
+
+  updateCart(req, res, next) {
+    const cartId = req.params.cartId;
+    Cart.update({_id:cartId },req.body, (err, cart) => {
+      if (err) {
+        return next(err);
+      }
+      if(!cart){
+        return res.sendStatus(404);
+      }
+      res.sendStatus(201);
     })
   }
 }

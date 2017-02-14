@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const cartSchema = new Schema({
   userId: Number,
-  carts: [{
-    cartId: Number,
-    items: [{
-      type: Schema.Types.ObjectId,
+  items: [{
+    count: Number,
+    item: {
+      type: Schema.ObjectId,
       ref: 'Item'
-    }]
+    }
   }]
 });
 

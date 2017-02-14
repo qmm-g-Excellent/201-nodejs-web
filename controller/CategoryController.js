@@ -4,23 +4,33 @@ var async = require('async');
 
 export default class CategoryController {
   getAll(req, res, next) {
-    Category.find({}, (err, categories) => {
+    async.series({
+      categories: (callback) => {
+        Category.find({}, callback);
+      },
+      totalCount: (callback)=> {
+        Category.count(callback);
+      }
+    }, (err, result)=> {
       if (err) {
         return next(err);
       }
-      res.status(200).send(categories);
-    })
+      return res.status(200).send(result);
+    });
+
   }
 
-  getCategory(req, res, next) {
-    Category.findOne({categoryId: req.params.categoryId})
-        .populate('items')
-        .exec((err, doc)=> {
-          if (err) {
-            return next(err);
-          }
-          res.status(200).send(doc);
-        });
+  getOne(req, res, next) {
+    const categoryId = req.params.categoryId;
+    Category.findById(categoryId, (err, doc)=> {
+      if (err) {
+        return next(err);
+      }
+      if (!doc) {
+        return res.sendStatus(404);
+      }
+      return res.status(200).send(doc);
+    })
   }
 
   addCategory(req, res, next) {
@@ -29,108 +39,53 @@ export default class CategoryController {
         return next(err);
       }
 
-      res.status(201).send(category);
+      res.status(201).send({uri: `categories/${category._id}`});
     })
   }
 
   deleteCategory(req, res, next) {
-    Category.remove({categoryId: req.params.categoryId}, (err, result)=> {
-      if (err) {
+    const category = req.params.category;
+    async.waterfall([
+      (done)=> {
+        Item.findOne({category}, done);
+      },
+      (item, done)=> {
+        if (item) {
+          done(true,   null);
+        }else{
+          Category.findOneAndRemove({_id:category},(err,result)=>{
+            if(!result){
+             return done(false, null);
+            }
+            done(err,result);
+          });
+        }
+      }
+    ], (err)=> {
+      if( err === true){
+        return res.sendStatus(400);
+      }
+      if(err === false){
+        return res.sendStatus(404);
+      }
+      if(err){
         return next(err);
       }
-      res.status(201).send(result);
-    })
+      return res.sendStatus(204);
+    });
   }
 
   updateCategory(req, res, next) {
     const categoryId = req.params.categoryId;
-    const categoryName = req.body.categoryName;
-    Category.update({categoryId}, {categoryName}, (err, category) => {
+    const name = req.body.name;
+    Category.update({_id:categoryId}, {name}, (err, result) => {
       if (err) {
         return next(err);
       }
-      res.status(204).send(category);
+      if(!result){
+        return res.sendStatus(404);
+      }
+     return res.sendStatus(204);
     })
   }
-
-  addExitedItemToCategory(req, res, next) {
-    const categoryId = req.params.categoryId;
-    const itemId = req.params.itemId;
-    Category.findOne({categoryId}, (err, category)=> {
-      Category.findOne({'items': itemId}, (err, doc) => {
-        if (err) {
-          return next(err);
-        }
-        if (!doc) {
-          category.items.push(itemId);
-          category.save();
-          return res.status(201).send(category);
-        }
-        res.sendStatus(204);
-      })
-    })
-  }
-
-  addItemToCategory(req, res, next) {
-    let categoryId = req.params.categoryId;
-    let item = {
-      name: req.body.name,
-      price: req.body.price,
-      count: req.body.count
-    };
-    async.waterfall([
-      (done)=> {
-        new Item(item).save((err, item) => {
-          done(err, item);
-        });
-      },
-      (item, done)=> {
-        Category.findOne({categoryId}, (err, category)=> {
-          if (category) {
-            category.items.push(item._id);
-            category.save(done);
-          }
-        });
-      }
-    ], (err, result)=> {
-      if (err) {
-        return next(err);
-      }
-      if (result) {
-        return res.status(201).send(result);
-      }
-      res.sendStatus(404);
-    });
-  }
-
-  updateItemForCategory(req, res, next) {
-    const itemId = req.params.itemId;
-    const categoryId = req.params.categoryId;
-    const price = req.body.price;
-    Item.update({_id: itemId}, {price}, (err, item)=> {
-      Category.findOne({categoryId, 'items': itemId})
-          .populate('items')
-          .exec((err, item) => {
-            if (err) {
-              return next(err);
-            }
-            res.status(201).send(item);
-          })
-    });
-  }
-
-  deleteItemForCategory(req, res, next) {
-    const itemId = req.params.itemId;
-    const categoryId = req.params.categoryId;
-    Category.findOne({categoryId}, (err, category)=> {
-      if(err){
-        return next(err)
-      }
-      category.items.remove(itemId);
-      category.save((err, doc) =>{
-        res.sendStatus(204);
-      });
-    })
-  }
-
 }

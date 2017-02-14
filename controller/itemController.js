@@ -1,5 +1,8 @@
-import Item from "../models/item";
-import async from 'async';
+const Item = require('../model/item');
+const constant = require('../config/constant');
+const async = require('async');
+
+
 
 export default class ItemController {
   getAll(req, res, next) {
@@ -16,7 +19,7 @@ export default class ItemController {
       if (err) {
         return next(err);
       }
-      return res.status(200).send(result);
+      return res.status(constant.httpCode.OK).send(result);
     });
   }
 
@@ -28,9 +31,9 @@ export default class ItemController {
             return next(err);
           }
           if (!doc) {
-            return res.sendStatus(404);
+            return res.sendStatus(constant.httpCode.NOT_FOUND);
           }
-          return res.status(200).send(doc);
+          return res.status(constant.httpCode.NOT_FOUND).send(doc);
 
         });
   }
@@ -40,7 +43,7 @@ export default class ItemController {
       if (err) {
         return next(err);
       }
-      res.status(201).send({uri: `items/${item._id}`});
+      res.status(constant.httpCode.CREATED).send({uri: `items/${item._id}`});
     })
   }
 
@@ -50,9 +53,9 @@ export default class ItemController {
         return next(err);
       }
       if (!result) {
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      return res.status(204);
+      return res.status(constant.httpCode.NO_CONTENT);
     })
   }
 
@@ -64,9 +67,9 @@ export default class ItemController {
         return next(err);
       }
       if (!item) {
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      return res.sendStatus(204);
+      return res.sendStatus(constant.httpCode.NO_CONTENT);
     })
   }
 }

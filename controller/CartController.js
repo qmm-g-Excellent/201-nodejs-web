@@ -1,6 +1,6 @@
-import Cart from '../models/cart';
-import Item from '../models/item';
-import async from 'async';
+const Cart = require('../model/cart');
+const constant = require('../config/constant');
+const async = require('async');
 
 const loadItemUri = (items)=>{
   return items.map(({item,count})=>{
@@ -31,7 +31,7 @@ export default class CartController {
       if (err) {
         return next(err);
       }
-      return res.status(200).send(result);
+      return res.status(constant.httpCode.OK).send(result);
     });
   }
 
@@ -42,12 +42,12 @@ export default class CartController {
          return next(err);
        }
        if(!doc){
-         return res.sendStatus(404);
+         return res.sendStatus(constant.httpCode.NOT_FOUND);
        }
        let cart = doc.toJSON();
        let items = cart.items;
        cart.items = loadItemUri(items);
-       return res.status(200).send(cart);
+       return res.status(constant.httpCode.OK).send(cart);
      })
 
   }
@@ -69,9 +69,9 @@ export default class CartController {
         return next(err);
       }
       if(!result){
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      return res.sendStatus(204);
+      return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
   }
 
@@ -82,9 +82,9 @@ export default class CartController {
         return next(err);
       }
       if(!cart){
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      res.sendStatus(201);
+      res.sendStatus(constant.httpCode.CREATED);
     })
   }
 }

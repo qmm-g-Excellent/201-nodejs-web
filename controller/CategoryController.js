@@ -1,6 +1,7 @@
-import Category  from '../models/category';
-import Item   from '../models/item';
-var async = require('async');
+const Category = require('../model/category');
+const Item = require('../model/item');
+const constant = require('../config/constant');
+const async = require('async');
 
 export default class CategoryController {
   getAll(req, res, next) {
@@ -15,7 +16,7 @@ export default class CategoryController {
       if (err) {
         return next(err);
       }
-      return res.status(200).send(result);
+      return res.status(constant.httpCode.OK).send(result);
     });
 
   }
@@ -27,9 +28,9 @@ export default class CategoryController {
         return next(err);
       }
       if (!doc) {
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      return res.status(200).send(doc);
+      return res.status(constant.httpCode.NO_CONTENT).send(doc);
     })
   }
 
@@ -39,7 +40,7 @@ export default class CategoryController {
         return next(err);
       }
 
-      res.status(201).send({uri: `categories/${category._id}`});
+      res.status(constant.httpCode.CREATED).send({uri: `categories/${category._id}`});
     })
   }
 
@@ -63,15 +64,15 @@ export default class CategoryController {
       }
     ], (err)=> {
       if( err === true){
-        return res.sendStatus(400);
+        return res.sendStatus(constant.httpCode.BAD_REQUEST);
       }
       if(err === false){
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       if(err){
         return next(err);
       }
-      return res.sendStatus(204);
+      return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
   }
 
@@ -83,9 +84,9 @@ export default class CategoryController {
         return next(err);
       }
       if(!result){
-        return res.sendStatus(404);
+        return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-     return res.sendStatus(204);
+     return res.sendStatus(constant.httpCode.NO_CONTENT);
     })
   }
 }

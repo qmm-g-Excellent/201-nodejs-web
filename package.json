@@ -6,20 +6,24 @@
   "scripts": {
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "refreshMongo": "babel-node  ./tool/mongoTool.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "async": "^1.5.1",
-    "config": "^1.24.0",
+    "config": "^1.25.1",
     "express": "^4.14.0",
-    "mongoose": "^4.7.6"
+    "mongoose": "^4.7.6",
+    "should": "^11.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-preset-latest": "^6.16.0",
     "body-parser": "^1.16.0",
-    "nodemon": "^1.11.0"
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0"
   }
 }

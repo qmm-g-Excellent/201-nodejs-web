@@ -20,10 +20,10 @@
 
    ```
    GET /items # 获取全部item
-   GET /items/:id	# 获取一个item
+   GET /items/:itemId	# 获取一个item
    POST /items #增加一个item
-   DELETE /items/:id # 删除一个item
-   PUT /items/:id	# 更新一个item
+   DELETE /items/:itemId# 删除一个item
+   PUT /items/:itemId	# 更新一个item
    ```
 
 2. 创建Model: category，category 与 item 为一对多关系，并参照上面完成相应接口
@@ -34,10 +34,6 @@
  POST categories/  #增加一个category
  DELETE  categories/:categoryId  #删除一个category
  PUT categories/:categoryId   #更新一个category
- POST categories/:categoryId/:itemId  #给category添加一个已经存在的item
- POST categories/:categoryId'   #给category添加一个Item
- PUT categories/:categoryId/:itemId'  #更新一个category的一个item
- DELETE categories/:categoryId/:itemId  #删除一个category的一个item
 ```
 
 3. 创建Model: cart，cart 与 item 为多对多关系，并参照上面完成相应接口
@@ -46,10 +42,8 @@
     GET carts/    #获取所有的cart
     GET  carts/:cartId   #获取一个cart
     POST carts/    #增加一个cart
-    PUT  carts/:userId/:itemId  #修改一个cart
-    DELETE carts/:userId/:cartId  #删除一个cart
-    POST carts/:userId/:cartId   #给一个cart增加一个item
-    DELETE carts/:userId/:cartId/:itemId   #删除一个cart的item
+    PUT  carts/:cartId  #修改一个cart
+    DELETE carts/:cartId  #删除一个cart
    
  ```
 

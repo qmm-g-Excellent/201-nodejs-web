@@ -2,9 +2,7 @@ const Item = require('../model/item');
 const constant = require('../config/constant');
 const async = require('async');
 
-
-
-export default class ItemController {
+ class ItemController {
   getAll(req, res, next) {
     async.series({
       items: (callback) => {
@@ -23,6 +21,8 @@ export default class ItemController {
     });
   }
 
+
+
   getOne(req, res, next) {
     Item.findById(req.params.itemId)
         .populate('category')
@@ -38,14 +38,15 @@ export default class ItemController {
         });
   }
 
-  addItem(req, res, next) {
-    new Item(req.body).save((err, item)=> {
-      if (err) {
-        return next(err);
+  addItem(req, res, next){
+    new Item(req.body).save((err, item)=>{
+      if(err){
+       return next(err);
       }
-      res.status(constant.httpCode.CREATED).send({uri: `items/${item._id}`});
+      res.status(constant.httpCode.CREATED).send({uri:`items/${item._id}`});
     })
   }
+
 
   deleteItem(req, res, next) {
     Item.findOneAndRemove({_id: req.params.itemId}, (err, result) => {
@@ -55,7 +56,7 @@ export default class ItemController {
       if (!result) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      return res.status(constant.httpCode.NO_CONTENT);
+      return res.sendStatus(constant.httpCode.NO_CONTENT);
     })
   }
 
@@ -73,3 +74,5 @@ export default class ItemController {
     })
   }
 }
+
+module.exports =ItemController;

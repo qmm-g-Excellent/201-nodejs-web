@@ -3,7 +3,7 @@ const Item = require('../model/item');
 const constant = require('../config/constant');
 const async = require('async');
 
-export default class CategoryController {
+class CategoryController {
   getAll(req, res, next) {
     async.series({
       categories: (callback) => {
@@ -52,24 +52,24 @@ export default class CategoryController {
       },
       (item, done)=> {
         if (item) {
-          done(true,   null);
-        }else{
-          Category.findOneAndRemove({_id:category},(err,result)=>{
-            if(!result){
-             return done(false, null);
+          done(true, null);
+        } else {
+          Category.findOneAndRemove({_id: category}, (err, result)=> {
+            if (!result) {
+              return done(false, null);
             }
-            done(err,result);
+            done(err, result);
           });
         }
       }
     ], (err)=> {
-      if( err === true){
+      if (err === true) {
         return res.sendStatus(constant.httpCode.BAD_REQUEST);
       }
-      if(err === false){
+      if (err === false) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      if(err){
+      if (err) {
         return next(err);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
@@ -79,14 +79,16 @@ export default class CategoryController {
   updateCategory(req, res, next) {
     const categoryId = req.params.categoryId;
     const name = req.body.name;
-    Category.update({_id:categoryId}, {name}, (err, result) => {
+    Category.update({_id: categoryId}, {name}, (err, result) => {
       if (err) {
         return next(err);
       }
-      if(!result){
+      if (!result) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-     return res.sendStatus(constant.httpCode.NO_CONTENT);
+      return res.sendStatus(constant.httpCode.NO_CONTENT);
     })
   }
 }
+
+module.exports = CategoryController;

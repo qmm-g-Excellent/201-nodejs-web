@@ -1,5 +1,5 @@
-import {Router} from 'express';
-import ItemController from '../../controller/itemController';
+const {Router} = require('express');
+const ItemController = require('../../controller/itemController');
 
 const router = Router();
 const itemCtrl = new ItemController();
@@ -10,4 +10,4 @@ router.post('/', itemCtrl.addItem);
 router.delete('/:itemId',itemCtrl.deleteItem);
 router.put('/:itemId', itemCtrl.updateItem);
 
-export default router;
+module.exports = router;

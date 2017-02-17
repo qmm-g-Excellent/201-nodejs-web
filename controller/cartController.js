@@ -84,7 +84,7 @@ class CartController {
       if (!cart) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      res.sendStatus(constant.httpCode.CREATED);
+      res.sendStatus(constant.httpCode.NO_CONTENT);
     })
   }
 }

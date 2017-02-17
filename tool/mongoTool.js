@@ -18,11 +18,11 @@ const data = {
   Cart: cartData
 };
 
-//这个不是必要的
+//这个是获取对象models的所有key，然后变成一个数组返回给docs
 // const docs = Object.keys(models);
 
 
-//done这个参数什么时候可以有？？？？
+
 module.exports = (done) =>{
   models.forEach(model =>{
      model.remove({},()=>{

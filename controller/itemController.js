@@ -33,7 +33,7 @@ const async = require('async');
           if (!doc) {
             return res.sendStatus(constant.httpCode.NOT_FOUND);
           }
-          return res.status(constant.httpCode.NOT_FOUND).send(doc);
+          return res.status(constant.httpCode.OK).send(doc);
 
         });
   }

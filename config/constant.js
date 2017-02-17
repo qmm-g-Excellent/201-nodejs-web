@@ -1,4 +1,4 @@
-const constant = {
+module.exports = {
   httpCode: {
     OK: 200,
     CREATED: 201,
@@ -7,5 +7,3 @@ const constant = {
     BAD_REQUEST: 400
   }
 };
-
-module.exports = constant;

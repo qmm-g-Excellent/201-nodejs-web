@@ -6,11 +6,11 @@ const async = require('async');
 class CategoryController {
   getAll(req, res, next) {
     async.series({
-      categories: (callback) => {
-        Category.find({}, callback);
+      categories: (done) => {
+        Category.find({}, done);
       },
-      totalCount: (callback)=> {
-        Category.count(callback);
+      totalCount: (done)=> {
+        Category.count(done);
       }
     }, (err, result)=> {
       if (err) {
@@ -34,31 +34,31 @@ class CategoryController {
     })
   }
 
-  addCategory(req, res, next) {
-    new Category(req.body).save((err, category) => {
+  create(req, res, next) {
+    Category.create(req.body, (err, doc) => {
       if (err) {
         return next(err);
       }
 
-      res.status(constant.httpCode.CREATED).send({uri: `categories/${category._id}`});
-    })
+      res.status(constant.httpCode.CREATED).send({uri: `categories/${doc._id}`});
+    });
   }
 
-  deleteCategory(req, res, next) {
-    const category = req.params.category;
+  delete(req, res, next) {
+    const category = req.params.categoryId;
     async.waterfall([
       (done)=> {
         Item.findOne({category}, done);
       },
-      (item, done)=> {
-        if (item) {
+      (docs, done)=> {
+        if (docs) {
           done(true, null);
         } else {
-          Category.findOneAndRemove({_id: category}, (err, result)=> {
-            if (!result) {
+          Category.findByIdAndRemove(categoryId, (err, doc)=> {
+            if (!doc) {
               return done(false, null);
             }
-            done(err, result);
+            done(err, doc);
           });
         }
       }
@@ -76,14 +76,13 @@ class CategoryController {
     });
   }
 
-  updateCategory(req, res, next) {
+  update(req, res, next) {
     const categoryId = req.params.categoryId;
-    const name = req.body.name;
-    Category.update({_id: categoryId}, {name}, (err, result) => {
+    Category.findByIdAndUpdate(categoryId, req.body, (err, doc) => {
       if (err) {
         return next(err);
       }
-      if (!result) {
+      if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);

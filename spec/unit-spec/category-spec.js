@@ -48,7 +48,7 @@ describe('CategpryController', ()=> {
         .end(done);
   });
 
-  it('DELTE /categories/:categoryId', (done)=> {
+  it('DELETE /categories/:categoryId', (done)=> {
     const categoryId = '587f0f2586653d19297d40c9';
     request
         .delete(`/categories/${categoryId}`)

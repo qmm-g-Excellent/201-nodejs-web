@@ -5,13 +5,13 @@ const async = require('async');
  class ItemController {
   getAll(req, res, next) {
     async.series({
-      items: (callback) => {
+      items: (done) => {
         Item.find({})
             .populate('category')
-            .exec(callback);
+            .exec(done);
       },
-      totalCount: (callback) => {
-        Item.count(callback);
+      totalCount: (done) => {
+        Item.count(done);
       }
     }, (err, result) => {
       if (err) {
@@ -38,36 +38,35 @@ const async = require('async');
         });
   }
 
-  addItem(req, res, next){
-    new Item(req.body).save((err, item)=>{
+  create(req, res, next){
+    Item.create(req.body, (err, doc)=>{
       if(err){
        return next(err);
       }
-      res.status(constant.httpCode.CREATED).send({uri:`items/${item._id}`});
+ return   res.status(constant.httpCode.CREATED).send({uri:`items/${doc._id}`});
     })
   }
 
 
-  deleteItem(req, res, next) {
-    Item.findOneAndRemove({_id: req.params.itemId}, (err, result) => {
+  delete(req, res, next) {
+    Item.findByIdAndRemove(req.params.itemId, (err, doc) => {
       if (err) {
         return next(err);
       }
-      if (!result) {
+      if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
     })
   }
 
-  updateItem(req, res, next) {
+  update(req, res, next) {
     const itemId = req.params.itemId;
-    const price = req.body.price;
-    Item.update({_id: itemId}, {$set: {price}}, (err, item)=> {
+    Item.findByIdAndUpdate(itemId,req.body, (err, doc)=> {
       if (err) {
         return next(err);
       }
-      if (!item) {
+      if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);

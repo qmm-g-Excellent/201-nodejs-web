@@ -2,7 +2,7 @@ const Cart = require('../model/cart');
 const constant = require('../config/constant');
 const async = require('async');
 
-const loadItemUri = (items)=> {
+const mapItemToUri = (items)=> {
   return items.map(({item, count})=> {
     return {uri: `items/${item}`, count};
   });
@@ -11,27 +11,27 @@ const loadItemUri = (items)=> {
 class CartController {
   getAll(req, res, next) {
     async.series({
-      carts: (callback)=> {
-        Cart.find({}, (err, doc)=> {
+      carts: (done)=> {
+        Cart.find({}, (err, docs)=> {
           if (err) {
-            return next(err);
+            return done(err);
           }
-          let carts = doc.map((item)=> {
-            let cart = item.toJSON();
-            cart.items = loadItemUri(cart.items);
+          let carts = docs.map((doc)=> {
+            let cart = doc.toJSON();
+            cart.items = mapItemToUri(cart.items);
             return cart;
           });
-          callback(null, carts);
+          done(null, carts);
         });
       },
-      totalCount: (callback)=> {
-        Cart.count(callback);
+      totalCount: (done)=> {
+        Cart.count(done);
       }
-    }, (err, result)=> {
+    }, (err, docs)=> {
       if (err) {
         return next(err);
       }
-      return res.status(constant.httpCode.OK).send(result);
+      return res.status(constant.httpCode.OK).send(docs);
     });
   }
 
@@ -46,13 +46,13 @@ class CartController {
       }
       let cart = doc.toJSON();
       let items = cart.items;
-      cart.items = loadItemUri(items);
+      cart.items = mapItemToUri(items);
       return res.status(constant.httpCode.OK).send(cart);
     })
 
   }
 
-  addCart(req, res, next) {
+  create(req, res, next) {
     const cart = req.body;
     new Cart(cart).save((err, doc) => {
       if (err) {
@@ -62,30 +62,30 @@ class CartController {
     })
   }
 
-  deleteCart(req, res, next) {
+  delete(req, res, next) {
     const cartId = req.params.cartId;
-    Cart.findOneAndRemove({_id: cartId}, (err, result)=> {
+    Cart.findByIdAndRemove(cartId, (err, doc)=> {
       if (err) {
         return next(err);
       }
-      if (!result) {
+      if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
       return res.sendStatus(constant.httpCode.NO_CONTENT);
     });
   }
 
-  updateCart(req, res, next) {
+  update(req, res, next) {
     const cartId = req.params.cartId;
-    Cart.update({_id: cartId}, req.body, (err, cart) => {
+    Cart.findByIdAndUpdate(cartId, req.body, (err, doc) => {
       if (err) {
         return next(err);
       }
-      if (!cart) {
+      if (!doc) {
         return res.sendStatus(constant.httpCode.NOT_FOUND);
       }
-      res.sendStatus(constant.httpCode.NO_CONTENT);
-    })
+     return res.sendStatus(constant.httpCode.NO_CONTENT);
+    });
   }
 }
 

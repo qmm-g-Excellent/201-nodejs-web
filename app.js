@@ -4,7 +4,11 @@ const config = require('config');
 const router = require('./router');
 const bodyParser = require("body-parser");
 
-mongoose.connect(config.get('mongoUri'));
+mongoose.connect(config.get('mongoUri'), (err) =>{
+   if(err){
+   console.log("mongodb connect error");
+   } 
+});
 
 const app = express();
 app.use(bodyParser.json());
